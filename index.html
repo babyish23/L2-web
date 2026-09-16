@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liao Chia Hui · 廖家暉</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1a2e24;
+        --ink-soft: #3d5648;
+        --mist: #e8f0ea;
+        --leaf: #2f6b4f;
+        --glow: #c8e0d0;
+        --paper: #f4f8f5;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      body {
+        font-family: "Manrope", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(ellipse 80% 60% at 20% 10%, #d4ebe0 0%, transparent 55%),
+          radial-gradient(ellipse 70% 50% at 90% 80%, #c5ddd4 0%, transparent 50%),
+          linear-gradient(165deg, #eef5f0 0%, #dceae2 45%, #cfdfd6 100%);
+        overflow-x: hidden;
+      }
+
+      .atmosphere {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(26, 46, 36, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(26, 46, 36, 0.03) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+        animation: drift 28s ease-in-out infinite alternate;
+      }
+
+      @keyframes drift {
+        from {
+          transform: translate(0, 0);
+        }
+        to {
+          transform: translate(-12px, 8px);
+        }
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: clamp(1.5rem, 4vw, 3rem);
+        position: relative;
+        z-index: 1;
+      }
+
+      .stage {
+        width: min(42rem, 100%);
+        text-align: center;
+      }
+
+      .brand {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: clamp(2.75rem, 9vw, 5.25rem);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        opacity: 0;
+        transform: translateY(18px);
+        animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+      }
+
+      .brand span {
+        display: block;
+        font-size: 0.42em;
+        font-style: italic;
+        color: var(--leaf);
+        margin-top: 0.35em;
+        letter-spacing: 0.04em;
+      }
+
+      .tagline {
+        margin-top: 1.25rem;
+        font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+        font-weight: 500;
+        color: var(--ink-soft);
+        letter-spacing: 0.02em;
+        opacity: 0;
+        animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+      }
+
+      .clock {
+        margin-top: 2.5rem;
+        opacity: 0;
+        animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.46s forwards;
+      }
+
+      .clock-time {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: clamp(2.2rem, 7vw, 3.6rem);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.04em;
+        color: var(--ink);
+        transition: opacity 0.25s ease;
+      }
+
+      .clock-time.is-ticking {
+        opacity: 0.35;
+      }
+
+      .clock-date {
+        margin-top: 0.65rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--ink-soft);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .pulse {
+        display: inline-block;
+        width: 0.45rem;
+        height: 0.45rem;
+        margin-right: 0.55rem;
+        border-radius: 50%;
+        background: var(--leaf);
+        vertical-align: middle;
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.35;
+          transform: scale(0.75);
+        }
+      }
+
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <main>
+      <section class="stage">
+        <h1 class="brand">
+          Liao Chia Hui
+          <span>廖家暉</span>
+        </h1>
+        <p class="tagline">Personal page · live local time</p>
+        <div class="clock" aria-live="polite">
+          <div id="time" class="clock-time">--:--:--</div>
+          <p class="clock-date">
+            <span class="pulse" aria-hidden="true"></span>
+            <span id="date">Loading date…</span>
+          </p>
+        </div>
+      </section>
+    </main>
+    <script>
+      const timeEl = document.getElementById("time");
+      const dateEl = document.getElementById("date");
+
+      const timeFmt = new Intl.DateTimeFormat(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+
+      const dateFmt = new Intl.DateTimeFormat(undefined, {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+      function tick() {
+        const now = new Date();
+        timeEl.classList.add("is-ticking");
+        requestAnimationFrame(() => {
+          timeEl.textContent = timeFmt.format(now);
+          dateEl.textContent = dateFmt.format(now);
+          timeEl.classList.remove("is-ticking");
+        });
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    </script>
+  </body>
+</html>
