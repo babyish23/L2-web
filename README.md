@@ -2,6 +2,9 @@
 
 Do in Class 1 (DIC-1) for the **AIOT-DA** course.
 
+## Github Repo
+https://github.com/babyish23/L2-web
+
 ## Live Demo
 
 https://babyish23.github.io/L2-web/
